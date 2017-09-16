@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const auth_token = require('swms.token');
+const token_login = require('swms-token');
 
 client.on('ready', () => {
     console.log('I am ready!');
@@ -13,4 +13,4 @@ client.on('message', message => {
     }
 });
 
-auth_token(client);
+token_login(client);
