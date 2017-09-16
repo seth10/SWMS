@@ -79,7 +79,11 @@ if os.path.exists("test_calendar.ics"):
     print(events)
     the_clone = events
     #Insert padding to generate and place Transition/Gap objects- use timedelta
+    skip = False
     for i in range(len(events)-1):#start at 0 and stop before final object- assume first and last objects are wake/sleep? TODO
+        if skip:
+            skip = False
+            i += 1
         difference = events[i+1].dateStart-events[i].dateEnd
         print(str(events[i+1].dateStart) + ", " + str(events[i].dateEnd) + ", " + str(i))
         print("Difference is " + str(difference.total_seconds()))
@@ -89,10 +93,12 @@ if os.path.exists("test_calendar.ics"):
             print("CONFLICT! ABORT ABORT!")
         elif difference.total_seconds() <= 30*60:#30 minutes or less is a TRANSITION period
             #create event Transition object
-            the_clone.insert(i+i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "%transition%"))
+            the_clone.insert(i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "%transition%"))
+            skip = True
         else:
             #create event Gap object
-            the_clone.insert(i+i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "%gap%", True))
+            the_clone.insert(i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "%gap%", True))
+            skip = True
     print()
     print(the_clone)
 else:
