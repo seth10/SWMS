@@ -125,6 +125,9 @@ if os.path.exists("test_calendar.ics"):
                 current_freqs.update({event.timeType:1})
             else:
                 current_freqs[event.timeType] += 1
+    for key in desired_freqs.keys():
+        if key not in current_freqs.keys():
+            current_freqs.update({key:0})
     print(current_freqs)
     total = 0
     for key in current_freqs.keys():
@@ -142,5 +145,31 @@ if os.path.exists("test_calendar.ics"):
     print(spareTime)
     spareTime = sorted(spareTime, key=lambda x: x[0], reverse=True)
     print(spareTime)
+    totalTime = 0
+    for gap in spareTime:
+        totalTime += gap[0]
+    print(totalTime)
+    numOfParts = 5
+    equal_piece = totalTime / numOfParts
+    offset = 0
+    for i in range(1,numOfParts+1):
+        not_enough = []
+        gift = equal_piece
+        for key in dfreqs.keys():
+            print(key)
+            print(str(dfreqs[key]) + " " + str(cfreqs[key]))
+            diff = (dfreqs[key] - cfreqs[key])
+            if diff > 0:
+                not_enough.append([key, diff])
+        print(not_enough)
+        while(equal_piece > 15*60):
+            while len(spareTime) != 0:
+                max_time = spareTime[0][0]
+                if max_time > 90+30:
+                    #Pluck out 90 minute period
+                elif max_time > 60+30:
+                    #Pluck out 60 minute period
+                elif max_time > 30+30:
+                    #Pluck out 30 minute period
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
