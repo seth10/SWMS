@@ -77,18 +77,23 @@ if os.path.exists("test_calendar.ics"):
     events = sorted(events, key=lambda x: x.dateStart)#TODO check if properly sorts for more than one variable
     print("\nSorted events:")
     print(events)
+    the_clone = events
     #Insert padding to generate and place Transition/Gap objects- use timedelta
     for i in range(len(events)-1):#start at 0 and stop before final object- assume first and last objects are wake/sleep? TODO
         difference = events[i+1].dateStart-events[i].dateEnd
+        print(str(events[i+1].dateStart) + ", " + str(events[i].dateEnd) + ", " + str(i))
+        print("Difference is " + str(difference.total_seconds()))
         if difference.total_seconds() == 0:
             continue
         elif difference.total_seconds() < 0:
             print("CONFLICT! ABORT ABORT!")
         elif difference.total_seconds() <= 30*60:#30 minutes or less is a TRANSITION period
             #create event Transition object
-            events.insert(0, eventobj(events[i].dateEnd, events[i+1].dateStart, "%transition%"))
+            the_clone.insert(i+i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "%transition%"))
         else:
             #create event Gap object
-            events.insert(0, eventobj(events[i].dateEnd, events[i+1].dateStart, "%gap%", True))
+            the_clone.insert(i+i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "%gap%", True))
+    print()
+    print(the_clone)
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
