@@ -12,7 +12,7 @@ class eventobj:
         timeTypes = ["sleep", "meal", "exercise", "leisure", "study", "class", "obligation", "gap", "transition", "earlyWakeTime", "lateWake", "earlySleep", "lateSleep"]
         matched = False
         for category in timeTypes:
-            if '%'+category+'%' in summary:
+            if '#'+category+'#' in summary:
                 self.timeType = category
                 matched = True
                 break
@@ -55,12 +55,12 @@ if os.path.exists("test_calendar.ics"):
                 #print(line[1][13::15])
                 print(line)
                 #date_start = datetime.datetime(int(str(line[0::4])), int(str(line[4::6])), int(str(line[6::8])), int(str(line[9::11])), int(str(line[11::13])), int(str(line[13::15])))
-                date_start = datetime.datetime.strptime(line, "%Y%m%dT%H%M%S")
+                date_start = datetime.datetime.strptime(line, "#Y#m#dT#H#M#S")
                 print(date_start)    
             elif "DTEND:" in line:
                 print(line)
                 line = str(line.split("DTEND:")[1][:15:])
-                date_end = datetime.datetime.strptime(line, "%Y%m%dT%H%M%S")
+                date_end = datetime.datetime.strptime(line, "#Y#m#dT#H#M#S")
                 print(date_end)
             elif "SUMMARY:" in line:
                 summary = line.split("SUMMARY:")[1]
@@ -93,11 +93,11 @@ if os.path.exists("test_calendar.ics"):
             print("CONFLICT! ABORT ABORT!")
         elif difference.total_seconds() <= 30*60:#30 minutes or less is a TRANSITION period
             #create event Transition object
-            the_clone.insert(i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "%transition%"))
+            the_clone.insert(i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "#transition#"))
             skip = True
         else:
             #create event Gap object
-            the_clone.insert(i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "%gap%", True))
+            the_clone.insert(i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "#gap#", True))
             skip = True
     print()
     print(the_clone)
