@@ -62,8 +62,8 @@ if os.path.exists("test_calendar.ics"):
                 line = str(line.split("DTEND:")[1][:15:])
                 date_end = datetime.datetime.strptime(line, "%Y%m%dT%H%M%S")
                 print(date_end)
-            elif "SUMMARY:" in line:
-                summary = line.split("SUMMARY:")[1]
+            elif "DESCRIPTION:" in line:
+                summary = line.split("DESCRIPTION:")[1]
         if not process:
             continue
         now = datetime.datetime.today()#Add one day for tomorrow? TODO
@@ -107,5 +107,19 @@ if os.path.exists("test_calendar.ics"):
     current_freqs = {}
     #TODO implement sleep wake times
     desired_freqs = {"meal":2, "exercise":1, "leisure":5, "study":3, "class":3, "obligation":1}
+    for event in events:
+        if event.timeType not in ["gap", "transition"]:
+            if event.timeType not in current_freqs.keys():
+                current_freqs.update({event.timeType:1})
+            else:
+                current_freqs[event.timeType] += 1
+    print(current_freqs)
+    total = 0
+    for key in current_freqs.keys():
+        total += current_freqs[key]
+    print(total)
+    for key in current_freqs.keys():
+        current_freqs[key] /= total
+    print(current_freqs)
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
