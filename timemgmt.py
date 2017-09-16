@@ -80,10 +80,12 @@ if os.path.exists("test_calendar.ics"):
     the_clone = events
     #Insert padding to generate and place Transition/Gap objects- use timedelta
     skip = False
+    offset = 1
     for i in range(len(events)-1):#start at 0 and stop before final object- assume first and last objects are wake/sleep? TODO
         if skip:
             skip = False
-            i += 1
+            i += offset
+            offset += 1
         difference = events[i+1].dateStart-events[i].dateEnd
         print(str(events[i+1].dateStart) + ", " + str(events[i].dateEnd) + ", " + str(i))
         print("Difference is " + str(difference.total_seconds()))
