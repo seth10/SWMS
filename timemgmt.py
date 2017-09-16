@@ -37,9 +37,9 @@ if os.path.exists("test_calendar.ics"):
     print("Load the string")
     with open('test_calendar.ics', 'r') as myfile:
         data=myfile.read()
-    the_calendar = icalendar.Calendar().from_ical(data)
+    """the_calendar = icalendar.Calendar().from_ical(data)
     for key in the_calendar:
-        print(key)
+        print(key)"""
     print()
     events_raw = data.split("BEGIN:VEVENT")[1::]
     events = []
