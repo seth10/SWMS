@@ -24,6 +24,8 @@ class eventobj:
     def deconstruct():
         #Need to store auxiliary information so as not to perform lossy transformations
         return "BEGIN:VEVENT\nEND:VEVENT"
+
+
         
 
 if os.path.exists("wfholman@umail.iu.edu.ics"):
@@ -68,5 +70,18 @@ if os.path.exists("wfholman@umail.iu.edu.ics"):
     print(events)
     events = sorted(events, key=lambda x: x.dateStart)#TODO check if properly sorts for more than one variable
     print(events)
+    #Insert padding to generate and place Transition/Gap objects- use timedelta
+    for i in range(len(events)-1):#start at 0 and stop before final object- assume first and last objects are wake/sleep? TODO
+        difference = events[i+1]-events[i]
+        if difference.total_seconds() == 0:
+            continue
+        elif difference.total_seconds() < 0:
+            print("CONFLICT! ABORT ABORT!")
+        elif difference.total_seconds() <= 30*60:#30 minutes or less is a TRANSITION period
+            #create event Transition object
+            events.insert(0, "PLACEHOLDER")
+        else:
+            #create event Gap object
+            events.inert(0, "PLACEHOLDER")
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
