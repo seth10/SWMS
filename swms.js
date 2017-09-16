@@ -9,7 +9,8 @@ const morning_messages = [
 
 function getGratitudeMessage(userID) {
     const gratitude_messages = [
-        `Thank you for your response, <@${userID}> :smiley:`
+        `Thank you for your response, <@${userID}> :smiley:`,
+        `I would really like to thank you for sending me a message, <@${userID}>, through this extraordinarily long repsonse message.`
     ]
     return gratitude_messages[Math.floor(Math.random()*gratitude_messages.length)];
 }
@@ -21,12 +22,16 @@ client.on('ready', () => {
 
 client.on('message', message => {
     if (message.author.username != client.user.username) {
-        message.channel.startTyping();
+        const thinkingTime = 1000;
+        client.setTimeout(() => message.channel.startTyping(), thinkingTime);
+        let response = getGratitudeMessage(message.author.id);
         function respond() { 
-            message.author.send(getGratitudeMessage(message.author.id));
+            message.author.send(response);
             message.channel.stopTyping();
         }
-        client.setTimeout(respond, 2000);
+        const wpm = 240;
+        let wordCount = response.split(' ').length;
+        client.setTimeout(respond, (wordCount/wpm)*60*1000);
     }
 });
 
