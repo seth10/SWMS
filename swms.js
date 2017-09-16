@@ -20,8 +20,14 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-    if (message.author.username != client.user.username)
-        message.author.send(getGratitudeMessage(message.author.id));
+    if (message.author.username != client.user.username) {
+        message.channel.startTyping();
+        function respond() { 
+            message.author.send(getGratitudeMessage(message.author.id));
+            message.channel.stopTyping();
+        }
+        client.setTimeout(respond, 2000);
+    }
 });
 
 const morning_notification = schedule.scheduleJob('0 9 * * 1-5', () => {
