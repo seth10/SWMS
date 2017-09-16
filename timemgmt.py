@@ -12,12 +12,13 @@ class eventobj:
         timeTypes = ["sleep", "meal", "exercise", "leisure", "study", "class", "obligation", "gap", "transition", "earlyWakeTime", "lateWake", "earlySleep", "lateSleep"]
         matched = False
         for category in timeTypes:
-            if '#'+category+'#' in summary:
+            if '#'+category+'#' in summary or '#'+category+'#' == summary:
                 self.timeType = category
                 matched = True
                 break
         if not matched:
             #Prompt user for category type
+            print(summary + ": obligation")
             self.timeType = "obligation"
         #Also prompt user for missing necessary categories
 
@@ -63,7 +64,9 @@ if os.path.exists("test_calendar.ics"):
                 date_end = datetime.datetime.strptime(line, "%Y%m%dT%H%M%S")
                 print(date_end)
             elif "DESCRIPTION:" in line:
+                print("desc line " + line)
                 summary = line.split("DESCRIPTION:")[1]
+                print(summary)
         if not process:
             continue
         now = datetime.datetime.today()#Add one day for tomorrow? TODO
@@ -99,6 +102,7 @@ if os.path.exists("test_calendar.ics"):
             skip = True
         else:
             #create event Gap object
+            print("Made a gap")
             the_clone.insert(i+1, eventobj(events[i].dateEnd, events[i+1].dateStart, "#gap#", True))
             skip = True
     print()
@@ -107,6 +111,14 @@ if os.path.exists("test_calendar.ics"):
     current_freqs = {}
     #TODO implement sleep wake times
     desired_freqs = {"meal":2, "exercise":1, "leisure":5, "study":3, "class":3, "obligation":1}
+    total = 0
+    for key in desired_freqs.keys():
+        total += desired_freqs[key]
+    print(total)
+    dfreqs = desired_freqs
+    for key in desired_freqs.keys():
+        dfreqs[key] /= total
+    print(dfreqs)
     for event in events:
         if event.timeType not in ["gap", "transition"]:
             if event.timeType not in current_freqs.keys():
@@ -118,8 +130,17 @@ if os.path.exists("test_calendar.ics"):
     for key in current_freqs.keys():
         total += current_freqs[key]
     print(total)
+    cfreqs = current_freqs
     for key in current_freqs.keys():
-        current_freqs[key] /= total
-    print(current_freqs)
+        cfreqs[key] /= total
+    print(cfreqs)
+    spareTime = []
+    for i in range(len(the_clone)):
+        print(the_clone[i].timeType)
+        if the_clone[i].timeType == "gap":
+            spareTime.append([(the_clone[i].dateEnd - the_clone[i].dateStart).total_seconds(), i])
+    print(spareTime)
+    spareTime = sorted(spareTime, key=lambda x: x[0], reverse=True)
+    print(spareTime)
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
