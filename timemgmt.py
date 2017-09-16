@@ -25,6 +25,11 @@ class eventobj:
         #Need to store auxiliary information so as not to perform lossy transformations
         return "BEGIN:VEVENT\nEND:VEVENT"
 
+    def __repr__(self):
+        return '\n'.join([str(self.dateStart), str(self.dateEnd), self.timeType, str(self.isFlexible)])
+        #return str(self.dateStart) + '\n' + str(self.dateEnd) + '\n' + self.timeType + '\n' + str(self.isFlexible)
+
+
 
         
 
@@ -72,16 +77,16 @@ if os.path.exists("wfholman@umail.iu.edu.ics"):
     print(events)
     #Insert padding to generate and place Transition/Gap objects- use timedelta
     for i in range(len(events)-1):#start at 0 and stop before final object- assume first and last objects are wake/sleep? TODO
-        difference = events[i+1]-events[i]
+        difference = events[i+1].dateStart-events[i].dateEnd
         if difference.total_seconds() == 0:
             continue
         elif difference.total_seconds() < 0:
             print("CONFLICT! ABORT ABORT!")
         elif difference.total_seconds() <= 30*60:#30 minutes or less is a TRANSITION period
             #create event Transition object
-            events.insert(0, "PLACEHOLDER")
+            events.insert(0, eventobj(events[i].dateEnd, events[i+1].dateStart, "%transition%"))
         else:
             #create event Gap object
-            events.inert(0, "PLACEHOLDER")
+            events.inert(0, eventobj(events[i].dateEnd, events[i+1].dateStart, "%gap%", True))
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
