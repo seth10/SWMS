@@ -3,10 +3,6 @@ import os
 import datetime
 
 class event:
-    #dateStart
-    #dateEnd
-    #type
-    #Flexibility Boolean
     def __init__(self, dateS, dateE, summary, flexibilityFactor=False):
         self.isFlexible = flexibilityFactor
         self.dateStart = dateS
@@ -21,6 +17,11 @@ class event:
         if not matched:
             #Prompt user for category type
             self.timeType = "obligation"
+        #Also prompt user for missing necessary categories
+
+    def deconstruct():
+        #Need to store auxiliary information so as not to perform lossy transformations
+        return "BEGIN:VEVENT\nEND:VEVENT"
         
 
 if os.path.exists("wfholman@umail.iu.edu.ics"):
@@ -31,9 +32,14 @@ if os.path.exists("wfholman@umail.iu.edu.ics"):
     for key in the_calendar:
         print(key)
     print()
-    events = data.split("BEGIN:VEVENT")[1::]
-    for event in events:
-        print(event)
-        print()
+    events_raw = data.split("BEGIN:VEVENT")[1::]
+    events = []
+    for event in events_raw:
+        for line in event.splitlines():
+            if "DTSTART:" in line:
+                print(line)
+            elif "DTEND:" in line:
+                print(line)
+        #initialize date objects and compare
 else:
-    print("Prompt the user")
+    print("Prompt the user; GO MAKE AN ICAL FILE")
