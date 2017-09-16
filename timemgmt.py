@@ -33,9 +33,9 @@ class eventobj:
 
         
 
-if os.path.exists("wfholman@umail.iu.edu.ics"):
+if os.path.exists("test_calendar.ics"):
     print("Load the string")
-    with open('wfholman@umail.iu.edu.ics', 'r') as myfile:
+    with open('test_calendar.ics', 'r') as myfile:
         data=myfile.read()
     the_calendar = icalendar.Calendar().from_ical(data)
     for key in the_calendar:
@@ -72,8 +72,10 @@ if os.path.exists("wfholman@umail.iu.edu.ics"):
             print("APPLIES TO TODAY!")
         else:
             continue #Event is not applicable to today
+    print("\nAbout to list events\n")
     print(events)
     events = sorted(events, key=lambda x: x.dateStart)#TODO check if properly sorts for more than one variable
+    print("\nSorted events:")
     print(events)
     #Insert padding to generate and place Transition/Gap objects- use timedelta
     for i in range(len(events)-1):#start at 0 and stop before final object- assume first and last objects are wake/sleep? TODO
@@ -87,6 +89,6 @@ if os.path.exists("wfholman@umail.iu.edu.ics"):
             events.insert(0, eventobj(events[i].dateEnd, events[i+1].dateStart, "%transition%"))
         else:
             #create event Gap object
-            events.inert(0, eventobj(events[i].dateEnd, events[i+1].dateStart, "%gap%", True))
+            events.insert(0, eventobj(events[i].dateEnd, events[i+1].dateStart, "%gap%", True))
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
