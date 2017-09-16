@@ -65,8 +65,8 @@ if os.path.exists("wfholman@umail.iu.edu.ics"):
             print("APPLIES TO TODAY!")
         else:
             continue #Event is not applicable to today
-        #initialize date objects and compare
-        #print("Now is " + now)
+    print(events)
+    events = sorted(events, key=lambda x: x.dateStart)#TODO check if properly sorts for more than one variable
     print(events)
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
