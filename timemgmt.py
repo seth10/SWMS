@@ -37,8 +37,8 @@ if os.path.exists("wfholman@umail.iu.edu.ics"):
     events_raw = data.split("BEGIN:VEVENT")[1::]
     events = []
     for event in events_raw:
+        process = False
         for line in event.splitlines():
-            process = False
             if "DTSTART:" in line:
                 process = True
                 print(line)
@@ -66,7 +66,7 @@ if os.path.exists("wfholman@umail.iu.edu.ics"):
         else:
             continue #Event is not applicable to today
         #initialize date objects and compare
-        print("Now is " + now)
+        #print("Now is " + now)
     print(events)
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
