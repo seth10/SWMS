@@ -3,6 +3,9 @@ import os
 import datetime
 import string
 
+"""
+This program imports a native .ics Ical file, and preprocesses it to form a basic schedule. Using machine learning, we attempt to let the AI choose which activities to schedule throughout the day. User feedback iteratively improves the resulting schedules.
+"""
 
 class eventobj:
     def __init__(self, dateS, dateE, summary, flexibilityFactor=False):
