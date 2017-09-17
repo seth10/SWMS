@@ -125,7 +125,7 @@ if os.path.exists("test_calendar.ics"):
                 current_freqs.update({event.timeType:1})
             else:
                 current_freqs[event.timeType] += 1
-    for key in desired_freqs.keys():
+    for key in desired_freqs.keys():#For events that aren't scheduled at all, and need to be represented by 0
         if key not in current_freqs.keys():
             current_freqs.update({key:0})
     print(current_freqs)
@@ -143,15 +143,15 @@ if os.path.exists("test_calendar.ics"):
         if the_clone[i].timeType == "gap":
             spareTime.append([(the_clone[i].dateEnd - the_clone[i].dateStart).total_seconds(), i])
     print(spareTime)
-    spareTime = sorted(spareTime, key=lambda x: x[0], reverse=True)
+    spareTime = sorted(spareTime, key=lambda x: x[0], reverse=True)#Sort by the largest gap, in seconds
     print(spareTime)
     totalTime = 0
     for gap in spareTime:
         totalTime += gap[0]
     print(totalTime)
     numOfParts = 5
-    equal_piece = totalTime / numOfParts
-    offset = 0
+    equal_piece = totalTime / numOfParts #Iterate multiple times to better distribute time where needed
+    offset = 0 #Use an offset value since we'll be increasing the number of Event objects
     for i in range(1,numOfParts+1):
         not_enough = []
         gift = equal_piece
@@ -159,17 +159,65 @@ if os.path.exists("test_calendar.ics"):
             print(key)
             print(str(dfreqs[key]) + " " + str(cfreqs[key]))
             diff = (dfreqs[key] - cfreqs[key])
-            if diff > 0:
+            if diff > .1:
                 not_enough.append([key, diff])
         print(not_enough)
-        while(equal_piece > 15*60):
-            while len(spareTime) != 0:
-                max_time = spareTime[0][0]
-                if max_time > 90+30:
-                    #Pluck out 90 minute period
-                elif max_time > 60+30:
-                    #Pluck out 60 minute period
-                elif max_time > 30+30:
-                    #Pluck out 30 minute period
+        j = 0
+        while(equal_piece > 15*60) and (len(spareTime) != 0):
+            #This loop replaces gap objects with a Transition Object, an Activity Object, and then another Gap object if time remains
+            print("spare time while loop")
+            max_time = spareTime[0][0]
+            desired_act = not_enough[j%len(not_enough[0])][0]#Iterate through activities currently lacking in time
+            print(str(desired_act))
+            j += 1
+            if max_time > 90+30 and equal_piece > 90*60:
+                #Pluck out 90 minute period by creating a transition first
+                the_clone.insert(spareTime[0][1]+offset, eventobj(the_clone[spareTime[0][1]+offset].dateStart, the_clone[spareTime[0][1]+offset].dateStart + datetime.timedelta(minutes=15), "#transition#"))
+                offset += 1
+                #Insert new activity
+                the_clone.insert(spareTime[0][1]+offset, eventobj(the_clone[spareTime[0][1]+offset-1].dateEnd, the_clone[spareTime[0][1]+offset-1].dateEnd + datetime.timedelta(minutes=90), "#"+desired_act+"#", True))
+                offset += 1
+                equal_piece -= (90 + 15) * 60
+                #change Gap's start time
+                the_clone[spareTime[0][1]+offset].dateStart = the_clone[spareTime[0][1]+offset-1].dateEnd
+                the_diff = (the_clone[spareTime[0][1]+offset].dateStart - the_clone[spareTime[0][1]+offset].dateEnd).total_seconds()
+                equal_piece -= the_diff
+                spareTime = spareTime[1::]
+                if the_diff > 30*60:
+                    spareTime.append([the_diff, eventobj(the_clone[spareTime[0][1]+offset].dateStart, the_clone[spareTime[0][1]+offset].dateEnd, "#gap#", True)])
+                    spareTime = sorted(spareTime, key=lambda x: x[0])
+                print("the clone follows " + str(the_clone))
+                    
+            elif max_time > 60+30:
+                #Pluck out 60 minute period
+                print("placeholder")
+                spareTime = ""
+                equal_piece = 0
+                break
+            elif max_time > 30+30:
+                #Pluck out 30 minute period
+                print("placeholder")
+                spareTime = ""
+                equal_piece = 0
+                break
+            #Update the frequencies to better decide where to spend remaining time on
+            for event in events:
+                if event.timeType not in ["gap", "transition"]:
+                    if event.timeType not in current_freqs.keys():
+                        current_freqs.update({event.timeType:1})
+                    else:
+                        current_freqs[event.timeType] += 1
+            for key in desired_freqs.keys():
+                if key not in current_freqs.keys():
+                    current_freqs.update({key:0})
+            print(current_freqs)
+            total = 0
+            for key in current_freqs.keys():
+                total += current_freqs[key]
+            print(total)
+            cfreqs = current_freqs
+            for key in current_freqs.keys():
+                cfreqs[key] /= total
+            print(cfreqs)
 else:
     print("Prompt the user; GO MAKE AN ICAL FILE")
